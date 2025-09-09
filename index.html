@@ -1,114 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jump On It Good Time</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body, html {
-            height: 100%;
-            overflow: hidden;
-        }
-        
-        #background-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            z-index: -1;
-        }
-        
-        #play-button {
-            position: fixed;
-            bottom: 25%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2.5rem;
-            font-weight: bold;
-            padding: 16px 32px;
-            background: linear-gradient(145deg, #4a9eff, #2563eb, #1e40af);
-            border: 3px solid #1e293b;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: monospace;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: white;
-            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
-            box-shadow: 
-                0 6px 0 #1e40af,
-                0 8px 15px rgba(0, 0, 0, 0.4),
-                inset 0 2px 0 rgba(255, 255, 255, 0.3);
-            transition: all 0.2s ease;
-            z-index: 100;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        #play-button::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent 30%,
-                rgba(255, 255, 255, 0.2) 50%,
-                transparent 70%
-            );
-            animation: sparkle 3s infinite;
-            pointer-events: none;
-        }
-        
-        #play-button:hover {
-            transform: translateX(-50%) translateY(-2px);
-            box-shadow: 
-                0 8px 0 #1e40af,
-                0 12px 20px rgba(0, 0, 0, 0.5),
-                inset 0 3px 0 rgba(255, 255, 255, 0.4);
-        }
-        
-        #play-button:active {
-            transform: translateX(-50%) translateY(2px);
-            box-shadow: 
-                0 2px 0 #1e40af,
-                0 4px 8px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-        
-        @keyframes sparkle {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jump On It Good Time</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; background:#000; overflow:hidden; }
+
+    #background-video{
+      position:fixed; inset:0;
+      width:100vw; height:100vh; object-fit:cover; z-index:-1;
+    }
+
+    #play-button{
+      position:fixed;                /* keep this */
+      left:50%; transform:translateX(-50%);
+      bottom:25vh;                   /* use viewport units */
+      font-size:2.5rem; font-weight:bold;
+      padding:16px 32px;
+      background:linear-gradient(145deg,#4a9eff,#2563eb,#1e40af);
+      border:3px solid #1e293b; border-radius:12px;
+      cursor:pointer; font-family:monospace; text-transform:uppercase; letter-spacing:2px;
+      color:#fff; text-shadow:2px 2px 0 rgba(0,0,0,.5);
+      box-shadow:0 6px 0 #1e40af, 0 8px 15px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.3);
+      transition:all .2s ease; z-index:100; overflow:hidden;
+    }
+    #play-button::before{
+      content:""; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+      background:linear-gradient(45deg, transparent 30%, rgba(255,255,255,.2) 50%, transparent 70%);
+      animation:sparkle 3s infinite; pointer-events:none;
+    }
+    #play-button:hover{ transform:translateX(-50%) translateY(-2px); }
+    #play-button:active{ transform:translateX(-50%) translateY(2px); }
+    @keyframes sparkle{ from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+  </style>
 </head>
 <body>
-    <video id="background-video" loop playsinline muted>
-        <source src="jumponitgoodtimeloop_optimized.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    
-    <button id="play-button" onclick="playVideo()">Jump on it!</button>
-    
-    <script>
-        function playVideo() {
-            const video = document.getElementById('background-video');
-            const button = document.getElementById('play-button');
-            
-            video.muted = false;
-            video.play();
-            button.style.display = 'none';
-        }
-    </script>
+  <video id="background-video" playsinline preload="auto" loop>
+    <!-- Re-encode your file to H.264/AAC. Keep the filename and case exact. -->
+    <source src="jumponitgoodtimeloop_optimized.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+    <!-- Optional: add a WebM for browsers that prefer it -->
+    <!-- <source src="jumponitgoodtimeloop_optimized.webm" type="video/webm"> -->
+  </video>
+
+  <button id="play-button" onclick="playVideo()">Jump on it!</button>
+
+  <script>
+    async function playVideo(){
+      const v = document.getElementById('background-video');
+      const btn = document.getElementById('play-button');
+      try{
+        v.muted = false;            // user gesture allows sound
+        await v.play();             // some browsers reject without gesture; we’re inside click
+        btn.remove();
+      }catch(err){
+        // Fallback: if unmuted play gets blocked, try muted play and keep the button
+        console.warn('Play failed, retrying muted:', err);
+        v.muted = true;
+        try{ await v.play(); }catch(e){ console.error(e); }
+      }
+    }
+  </script>
 </body>
 </html>
